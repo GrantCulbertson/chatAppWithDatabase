@@ -15,8 +15,8 @@ A REST based web chat program using C++
  - Edit ```restChat.js``` so that ```baseUrl``` is your VM's IP address
 
 ## Set up App
- - ```sudo mkdir /var/www/html/restChat/```
- - ```sudo chown ubuntu /var/www/html/restChat/```
+ - ```sudo mkdir /var/www/html/restChatDatabase/```
+ - ```sudo chown ubuntu /var/www/html/restChatDatabase/```
 
 ## Make and run
  - ```make```
