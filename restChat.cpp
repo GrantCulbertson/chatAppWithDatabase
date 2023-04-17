@@ -13,6 +13,9 @@
 #include "httplib.h"
 #include <vector>
 
+#include "database.h"
+#include "userEntry.h"
+
 using namespace httplib;
 using namespace std;
 
