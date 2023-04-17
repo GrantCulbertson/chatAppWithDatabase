@@ -15,12 +15,12 @@
 //#include <cppconn/resultset.h>
 //#include <cppconn/statement.h>
 //#include <cppconn/prepared_statement.h>
-#include "contactEntry.h"
+#include "userEntry.h"
 
 #ifndef CONTACTDB_H
 #define CONTACTDB_H
 
-#define DB_URL "jdbc:mariadb://localhost:3306/contactApp"
+#define DB_URL "jdbc:mariadb://localhost:3306/chatApp"
 #define USER "root"
 #define PASS "GrantCulbertson"
 
@@ -37,6 +37,9 @@ public:
     void addEntry(string first,string last,string phone,string type,string address,string age);
     void editEntry(string idnum,string first,string last,string phone,string type,string address,string age);
     void deleteEntry(string idnum);
+	//New Functions:
+	void addUser(string username,string email,string password);
+	void addMessage(string ID, string username, string message);
 private:
     const string db_url=DB_URL;
     const string user=USER;

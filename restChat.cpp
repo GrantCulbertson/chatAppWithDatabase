@@ -10,11 +10,11 @@
 #include <map>
 #include <algorithm>
 #include <string>
-#include "httplib.h"
 #include <vector>
-
+#include <mariadb/conncpp.hpp>
 #include "database.h"
 #include "userEntry.h"
+#include "httplib.h"
 
 using namespace httplib;
 using namespace std;
@@ -122,7 +122,7 @@ string getMessagesJSON(string username, map<string,vector<string>> &messageMap) 
 	return result;
 }
 
-
+//MAIN---------------------------------------------------------------------------------------
 int main(void) {
   Server svr;
   int nextUser=0;
@@ -134,6 +134,8 @@ int main(void) {
   map<string,string> activeUsers;
   map<string,string> typingMap;
   map<string,string> isTypingMap;
+  contactDB ctdb; // Contact Book SQL Interface Object
+  vector<contactEntry> results;
 
 	
   /* "/" just returnsAPI name */
@@ -148,31 +150,7 @@ int main(void) {
     res.set_header("Access-Control-Allow-Origin","*");
     res.set_content("You found the secret page 0_0", "text/plain");
   });
-  
-  //REGISTRATION: This Section should handle someone registering, /chat/register/username/email/password
-  svr.Get(R"(/chat/register/(.*)/(.*)/(.*))", [&](const Request& req, Response& res) {
-	res.set_header("Access-Control-Allow-Origin","*");
-    string username = req.matches[1];
-	string email = req.matches[2];
-	string password = req.matches[3];
-    string result;
-    vector<string> empty;
-    // Check if user with this name or email already exists, or if password is less than 6 characters.
-    if (messageMap.count(username) or messageMap.count(email) or password.length() < 7){
-    	result = "{\"status\":\"registrationfailure\"}";
-    } else {
-    	// Add users to various maps
-    	messageMap[username]= empty;
-		userEmail[username] = email;
-		addUser(username , password, email , userMap);
-    	result = "{\"status\":\"success\",\"user\":\"" + username + "\",\"email\":\"" + email + "\",\"pass\":\"" + password + "\"}";
-		//Output some stuff
-		cout << username << " registered" << endl;
-		cout << "User Email: " << userEmail[username] << endl;
 
-    }
-    res.set_content(result, "text/json");
-  });
   
   //This Section is the part of the API for logging in.
   svr.Get(R"(/chat/join/(.*)/(.*))", [&](const Request& req, Response& res) {
@@ -283,6 +261,36 @@ int main(void) {
   });
   
 
+
+//BELOW IS FOR DATABASE-----------------------------------------------------------------------------------
+  
+  //REGISTRATION: This Section should handle someone registering, /chat/register/username/email/password
+  svr.Get(R"(/chat/register/(.*)/(.*)/(.*))", [&](const Request& req, Response& res) {
+	res.set_header("Access-Control-Allow-Origin","*");
+    string username = req.matches[1];
+	string email = req.matches[2];
+	string password = req.matches[3];
+    string result;
+    vector<string> empty;
+    // Check if user with this name or email already exists, or if password is less than 6 characters.
+    if (messageMap.count(username) or messageMap.count(email) or password.length() < 7){
+    	result = "{\"status\":\"registrationfailure\"}";
+    } else {
+    	// Add users to various maps
+    	messageMap[username]= empty;
+		userEmail[username] = email;
+		addUser(username , password, email , userMap);
+    	result = "{\"status\":\"success\",\"user\":\"" + username + "\",\"email\":\"" + email + "\",\"pass\":\"" + password + "\"}";
+		//Output some stuff
+		cout << username << " registered" << endl;
+		cout << "User Email: " << userEmail[username] << endl;
+
+    }
+    res.set_content(result, "text/json");
+  });
+  
+  
+  
   
   //What comes out in the Linux Console:
   cout << "Server listening on port " << port << endl;
