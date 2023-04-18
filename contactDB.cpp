@@ -106,7 +106,7 @@ vector<contactEntry> contactDB::findByFirst(string first) {
 	std::unique_ptr<sql::Statement> stmnt(conn->createStatement());
     
     // Execute query
-    sql::ResultSet *res = stmnt->executeQuery("SELECT * FROM Registered_Users WHERE Username like "+first+"");
+    sql::ResultSet *res = stmnt->executeQuery("SELECT * FROM Registered_Users WHERE Username = '"+first+"'");
     
     // Loop through and print results
     while (res->next()) {
@@ -114,7 +114,6 @@ vector<contactEntry> contactDB::findByFirst(string first) {
 			res->getString("password"),res->getString("ID"));
 	    	
 	    list.push_back(entry);
-
     }
     return list;
 }

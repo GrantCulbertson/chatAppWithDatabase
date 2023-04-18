@@ -38,7 +38,8 @@ window.onbeforeunload = leaveSession;
 
 function completeJoin(results) {
 	var status = results['status'];
-	console.log(status)
+	console.log("completeJoin() has run");
+	console.log(status);
 	if (status != "success") {
 		alert("Account Not Found");
 		leaveSession();
@@ -53,13 +54,15 @@ function completeJoin(results) {
 function join() {
 	myname = document.getElementById('yourname').value;
 	mypass = document.getElementById('yourpass').value;
+	console.log("Join is running");
 	fetch(baseUrl+'/chat/join/'+myname+'/'+mypass, {
         method: 'get'
     })
     .then (response => response.json() )
     .then (data =>completeJoin(data))
     .catch(error => {
-        {alert("Error: Something went wrong:"+error);}
+        {//alert("Error: Something went wrong join(): "+error);}//
+		alert("The username or password you have entered is incorrect.");}
     })
 }
 

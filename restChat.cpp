@@ -293,21 +293,34 @@ int main(void) {
     string username = req.matches[1];
 	string password = req.matches[2];
 	string email = userEmail[username];
+	//Get JSON object from SQL and parse to get Username and Password:
 	results = ctdb.findByFirst(username);
-	string json = jsonResults(results);
-	cout << "This is the Log in API Call" << json << endl;
-	string combined = "{\"user\":\""+username+"\",\"pass\":\""+password+"\",\"email\":\""+email+"\"}";
-	//cout<< combined << endl;
-	//cout<< testAgainst << endl;
-    string result;
-    // Check if user with this name and password exists
-    if (combined == userMap[username]){
-    	result = "{\"status\":\"success\",\"user\":\"" + username + "\"}";
-		activeUsers[username] = "this user is active";
-		cout << username << " joins" << endl;
-    } else {
-    	result = "{\"status\":\"failure\"}";
+	string jsonMessage = jsonResults(results);
+	json json_obj = json::parse(jsonMessage);
+	json getArray = json_obj["results"];
+	json obtainedValues;
+	// string gotUsername = getArray["username"];
+	// string gotPassword = getArray["password"];
+    // Iterate over the elements of the array
+    for (auto& values : getArray) {
+        std::cout << values << std::endl;
+		obtainedValues = values;
     }
+	string gotUsername = obtainedValues["username"];
+	string gotPassword = obtainedValues["password"];
+	//Check that everything is working:
+	cout << "This is the Log in API Call" << jsonMessage << endl;
+	cout << "obtainedValues: " << obtainedValues << endl;
+	cout << "gotUsername: " << gotUsername << endl;
+	cout << "gotPassword: " << gotPassword << endl;
+	// cout << "gotUsername: " << gotUsername << endl;
+	// cout << "gotPassword: " << gotPassword << endl;
+	string result;
+	if(gotUsername == username && gotPassword == password){
+		result = "{\"status\":\"success\",\"user\":\"" + username + "\"}";
+	}else{
+		result = "{\"status\":\"failure\"}";
+	}
     res.set_content(result, "text/json");
 	getUserList(userMap);
   });
