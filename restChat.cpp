@@ -12,6 +12,7 @@
 #include <string>
 #include <vector>
 #include <mariadb/conncpp.hpp>
+#include <random>
 #include "database.h"
 #include "userEntry.h"
 #include "httplib.h"
@@ -22,6 +23,24 @@ using namespace httplib;
 using namespace std;
 
 const int port = 5005;
+
+//FUNCTION FOR GENERATING USER TOKENS (this is from ChatGPT, kind of cool)
+std::string generate_token(int length) {
+    std::string charset = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+    std::string token;
+
+    // Seed the random number generator
+    std::random_device rd;
+    std::mt19937 gen(rd());
+
+    // Generate random characters from the charset
+    std::uniform_int_distribution<int> dist(0, charset.size() - 1);
+    for (int i = 0; i < length; i++) {
+        token += charset[dist(gen)];
+    }
+
+    return token;
+}
 
 
 //Grab List of Usernames
@@ -229,7 +248,7 @@ int main(void) {
 	res.set_content(result, "text/json");
   });
   
-    //This part of the code will send ... for someone typing
+    //This part of the code will send ... for someone typing. THIS IS DEPRECATED.
     svr.Get(R"(/chat/typingmessage/(.*))", [&](const Request& req, Response& res) {
     res.set_header("Access-Control-Allow-Origin","*");
 	string username = req.matches[1];
@@ -314,15 +333,19 @@ int main(void) {
 	string gotUsername = obtainedValues["username"];
 	string gotPassword = obtainedValues["password"];
 	//Check that everything is working:
-	cout << "This is the Log in API Call" << jsonMessage << endl;
-	cout << "obtainedValues: " << obtainedValues << endl;
-	cout << "gotUsername: " << gotUsername << endl;
-	cout << "gotPassword: " << gotPassword << endl;
+	// cout << "This is the Log in API Call" << jsonMessage << endl;
+	// cout << "obtainedValues: " << obtainedValues << endl;
+	// cout << "gotUsername: " << gotUsername << endl;
+	// cout << "gotPassword: " << gotPassword << endl;
 	string result;
+	//Assign the user a random token.
+	string token = generate_token(20);
+	
+	
 	if(gotUsername == username && gotPassword == password){
 		result = "{\"status\":\"success\",\"user\":\"" + username + "\"}";
 		activeUsers[username] = "this user is active";
-		cout << username << " joins" << endl;
+		cout << username << " joins, token is " << token << endl;
 	}else{
 		result = "{\"status\":\"failure\"}";
 	}
