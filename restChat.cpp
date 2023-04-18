@@ -169,19 +169,19 @@ int main(void) {
 
 
   //This is the part of the API that handles sending messages.
-   svr.Get(R"(/chat/send/(.*)/(.*))", [&](const Request& req, Response& res) {
-    res.set_header("Access-Control-Allow-Origin","*");
-	string username = req.matches[1];
-	string message = req.matches[2];
-	string result; 
-    if (!messageMap.count(username)) {
-    	result = "{\"status\":\"baduser\"}";
-	} else {
-		addMessage(username,message,messageMap);
-		result = "{\"status\":\"success\"}";
-	}
-    res.set_content(result, "text/json");
-  });
+   // svr.Get(R"(/chat/send/(.*)/(.*))", [&](const Request& req, Response& res) {
+    // res.set_header("Access-Control-Allow-Origin","*");
+	// string username = req.matches[1];
+	// string message = req.matches[2];
+	// string result; 
+    // if (!messageMap.count(username)) {
+    	// result = "{\"status\":\"baduser\"}";
+	// } else {
+		// addMessage(username,message,messageMap);
+		// result = "{\"status\":\"success\"}";
+	// }
+    // res.set_content(result, "text/json");
+  // });
   
  
   //This part of the code grabs messages that are sent
@@ -275,7 +275,6 @@ int main(void) {
 	string json_str = getArray.dump();
 	bool emptyCheck = json_str == "[]";
 	cout << "Registration is Running: " << jsonMessage << " " << json_str << " " << emptyCheck <<endl;
-    // Check if user with this name or email already exists, or if password is less than 6 characters.
     if (json_str != "[]" or password.length() < 7){
     	result = "{\"status\":\"registrationfailure\"}";
     }else{
@@ -333,6 +332,42 @@ int main(void) {
   
  
 //ADD A MESSAGE TO THE DATABASE----------------------------------------------------------------------
+   svr.Get(R"(/chat/send/(.*)/(.*))", [&](const Request& req, Response& res) {
+    res.set_header("Access-Control-Allow-Origin","*");
+	string username = req.matches[1];
+	string message = req.matches[2];
+	string result;
+	//Grab information from the SQL database:
+	
+	//Get JSON object from SQL and parse to get Username and ID:
+	results = ctdb.findByFirst(username);
+	string jsonMessage = jsonResults(results);
+	json json_obj = json::parse(jsonMessage);
+	json getArray = json_obj["results"];
+	json obtainedValues;
+	
+	//Go through the Array that comes with JSON object from SQL
+    for (auto& values : getArray) {
+        std::cout << values << std::endl;
+		obtainedValues = values;
+    }
+	
+	//Get the username and ID from the array that is that JSON object.
+	string gotUsername = obtainedValues["username"];
+	string gotID = obtainedValues["ID"];
+	
+	ctdb.addMessage(gotID,gotUsername,message);
+    if (!messageMap.count(username)) {
+    	result = "{\"status\":\"baduser\"}";
+	} else {
+		addMessage(username,message,messageMap);
+		result = "{\"status\":\"success\"}";
+	}
+    res.set_content(result, "text/json");
+  });
+
+
+
 
   //What comes out in the Linux Console:
   cout << "Server listening on port " << port << endl;

@@ -157,6 +157,18 @@ void contactDB::addUser(string username,string email,string password){
   	stmnt->executeQuery("INSERT INTO Registered_Users(Username,Email,Password) VALUES ('"+username+"','"+email+"','"+password+"')");
 }
 
+void contactDB::addMessage(string ID,string username,string message){
+
+	if (!conn) {
+   		cerr << "Invalid database connection" << endl;
+   		exit (EXIT_FAILURE);
+  	}
+
+  	std::auto_ptr<sql::Statement> stmnt(conn->createStatement());
+	
+  	stmnt->executeQuery("INSERT INTO Messages(ID,Username,Message) VALUES ('"+ID+"','"+username+"','"+message+"')");
+}
+
 // contactEntry contactDB::fetchEntry(string id){
 
 	// contactEntry entry;	
