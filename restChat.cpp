@@ -299,13 +299,12 @@ int main(void) {
 	json json_obj = json::parse(jsonMessage);
 	json getArray = json_obj["results"];
 	json obtainedValues;
-	// string gotUsername = getArray["username"];
-	// string gotPassword = getArray["password"];
-    // Iterate over the elements of the array
+	//Go through the Array that comes with JSON object from SQL
     for (auto& values : getArray) {
         std::cout << values << std::endl;
 		obtainedValues = values;
     }
+	//Get the username and password from the array that is that JSON object.
 	string gotUsername = obtainedValues["username"];
 	string gotPassword = obtainedValues["password"];
 	//Check that everything is working:
@@ -313,11 +312,11 @@ int main(void) {
 	cout << "obtainedValues: " << obtainedValues << endl;
 	cout << "gotUsername: " << gotUsername << endl;
 	cout << "gotPassword: " << gotPassword << endl;
-	// cout << "gotUsername: " << gotUsername << endl;
-	// cout << "gotPassword: " << gotPassword << endl;
 	string result;
 	if(gotUsername == username && gotPassword == password){
 		result = "{\"status\":\"success\",\"user\":\"" + username + "\"}";
+		activeUsers[username] = "this user is active";
+		cout << username << " joins" << endl;
 	}else{
 		result = "{\"status\":\"failure\"}";
 	}
