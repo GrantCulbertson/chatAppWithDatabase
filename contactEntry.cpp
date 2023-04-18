@@ -3,36 +3,27 @@
 contactEntry::contactEntry() {
 }
 
-contactEntry::contactEntry(sql::SQLString f, sql::SQLString l, sql::SQLString p, sql::SQLString t, sql::SQLString I,sql::SQLString d,sql::SQLString a) {
-    first = f;
-    last = l;
-    phone = p;
-    type = t;
+contactEntry::contactEntry(sql::SQLString u, sql::SQLString e, sql::SQLString p,sql::SQLString I) {
+    username = u;
+    email = e;
+    password = p;
     ID=I;
-	address = d;
-	age = a;
 }
 
 string contactEntry::text() {
 	string result = ID + ". ";
-	result += first + " ";
-	result += last + " ";
-	result += phone + " ";
-	result += type + " ";
-	result += address + " ";
-	result += age;
+	result += username + " ";
+	result += email + " ";
+	result += password;
 	return result;
 
 }
 
 string contactEntry::json() {
 	string result = "{\"ID\":\"" + ID + "\",";
-	result += "\"first\":\"" + first + "\",";
-	result += "\"last\":\"" + last + "\",";
-	result += "\"phone\":\"" + phone + "\",";
-	result += "\"type\":\"" + type + "\",";
-	result += "\"address\":\"" + address + "\",";
-	result += "\"age\":\"" + age + "\"}";
+	result += "\"username\":\"" + username + "\",";
+	result += "\"password\":\"" + password + "\",";
+	result += "\"email\":\"" + email + "\"}";
 	return result;
 
 }

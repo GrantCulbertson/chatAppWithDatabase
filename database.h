@@ -34,7 +34,6 @@ public:
     vector<contactEntry> findByLast(string last);
     vector<contactEntry> findByType(string type);
     contactEntry fetchEntry(string id);
-    void addEntry(string first,string last,string phone,string type,string address,string age);
     void editEntry(string idnum,string first,string last,string phone,string type,string address,string age);
     void deleteEntry(string idnum);
 	//New Functions:

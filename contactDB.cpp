@@ -34,64 +34,64 @@ contactDB::contactDB() {
    	
 }
 
-vector<contactEntry> contactDB::find(string search) {
+// vector<contactEntry> contactDB::find(string search) {
 
-	vector<contactEntry> list;
+	// vector<contactEntry> list;
     
-    // Make sure the connection is still valid
-    if (!conn) {
-   		cerr << "Invalid database connection" << endl;
-   		exit (EXIT_FAILURE);
-   	}	
-    // Create a new Statement
-	std::unique_ptr<sql::Statement> stmnt(conn->createStatement());
+    // // Make sure the connection is still valid
+    // if (!conn) {
+   		// cerr << "Invalid database connection" << endl;
+   		// exit (EXIT_FAILURE);
+   	// }	
+    // // Create a new Statement
+	// std::unique_ptr<sql::Statement> stmnt(conn->createStatement());
     
-    // Execute query
-    sql::ResultSet *res = stmnt->executeQuery(
-			"SELECT * FROM contacts WHERE Last like '%"+search+"%' OR "+
-    		 + "First like '%"+search+"%' OR " +
-    		 + "Type like '%"+search+"%'");
+    // // Execute query
+    // sql::ResultSet *res = stmnt->executeQuery(
+			// "SELECT * FROM contacts WHERE Last like '%"+search+"%' OR "+
+    		 // + "First like '%"+search+"%' OR " +
+    		 // + "Type like '%"+search+"%'");
     
-    // Loop through and print results
-    while (res->next()) {
-    	contactEntry entry(res->getString("First"),res->getString("Last"),
-			res->getString("Phone"),res->getString("Type"),
-	    	res->getString("ID"),res->getString("Address"),res->getString("Age"));
+    // // Loop through and print results
+    // while (res->next()) {
+    	// contactEntry entry(res->getString("First"),res->getString("Last"),
+			// res->getString("Phone"),res->getString("Type"),
+	    	// res->getString("ID"),res->getString("Address"),res->getString("Age"));
 	    	
-	    list.push_back(entry);
+	    // list.push_back(entry);
 
-    }
-    return list;
+    // }
+    // return list;
 
-}
+// }
 
-vector<contactEntry> contactDB::findByLast(string last) {
+// vector<contactEntry> contactDB::findByLast(string last) {
 
-	vector<contactEntry> list;
+	// vector<contactEntry> list;
     
-    // Make sure the connection is still valid
-    if (!conn) {
-   		cerr << "Invalid database connection" << endl;
-   		exit (EXIT_FAILURE);
-   	}	
-    // Create a new Statement
-	std::unique_ptr<sql::Statement> stmnt(conn->createStatement());
+    // // Make sure the connection is still valid
+    // if (!conn) {
+   		// cerr << "Invalid database connection" << endl;
+   		// exit (EXIT_FAILURE);
+   	// }	
+    // // Create a new Statement
+	// std::unique_ptr<sql::Statement> stmnt(conn->createStatement());
     
-    // Execute query
-    sql::ResultSet *res = stmnt->executeQuery("SELECT * FROM contacts WHERE Last like '%"+last+"%'");
+    // // Execute query
+    // sql::ResultSet *res = stmnt->executeQuery("SELECT * FROM contacts WHERE Last like '%"+last+"%'");
     
-    // Loop through and print results
-    while (res->next()) {
-    	contactEntry entry(res->getString("First"),res->getString("Last"),
-			res->getString("Phone"),res->getString("Type"),
-	    	res->getString("ID"),res->getString("Address"),res->getString("Age"));
+    // // Loop through and print results
+    // while (res->next()) {
+    	// contactEntry entry(res->getString("First"),res->getString("Last"),
+			// res->getString("Phone"),res->getString("Type"),
+	    	// res->getString("ID"),res->getString("Address"),res->getString("Age"));
 	    	
-	    list.push_back(entry);
+	    // list.push_back(entry);
 
-    }
-    return list;
+    // }
+    // return list;
 
-}
+// }
 
 vector<contactEntry> contactDB::findByFirst(string first) {
 
@@ -106,13 +106,12 @@ vector<contactEntry> contactDB::findByFirst(string first) {
 	std::unique_ptr<sql::Statement> stmnt(conn->createStatement());
     
     // Execute query
-    sql::ResultSet *res = stmnt->executeQuery("SELECT * FROM contacts WHERE First like '%"+first+"%'");
+    sql::ResultSet *res = stmnt->executeQuery("SELECT * FROM Registered_Users WHERE Username like "+first+"");
     
     // Loop through and print results
     while (res->next()) {
-    	contactEntry entry(res->getString("First"),res->getString("Last"),
-			res->getString("Phone"),res->getString("Type"),
-	    	res->getString("ID"),res->getString("Address"),res->getString("Age"));
+    	contactEntry entry(res->getString("username"),res->getString("email"),
+			res->getString("password"),res->getString("ID"));
 	    	
 	    list.push_back(entry);
 
@@ -120,34 +119,34 @@ vector<contactEntry> contactDB::findByFirst(string first) {
     return list;
 }
 
-vector<contactEntry> contactDB::findByType(string type) {
-	vector<contactEntry> list;
+// vector<contactEntry> contactDB::findByType(string type) {
+	// vector<contactEntry> list;
 	
-    // Make sure the connection is still valid
-    if (!conn) {
-   		cerr << "Invalid database connection" << endl;
-   		exit (EXIT_FAILURE);
-   	}	
-    // Create a new Statement
-	std::unique_ptr<sql::Statement> stmnt(conn->createStatement());
+    // // Make sure the connection is still valid
+    // if (!conn) {
+   		// cerr << "Invalid database connection" << endl;
+   		// exit (EXIT_FAILURE);
+   	// }	
+    // // Create a new Statement
+	// std::unique_ptr<sql::Statement> stmnt(conn->createStatement());
     
-    // Execute query
-    sql::ResultSet *res = stmnt->executeQuery("SELECT * FROM contacts WHERE Type like '%"+type+"%'");
+    // // Execute query
+    // sql::ResultSet *res = stmnt->executeQuery("SELECT * FROM contacts WHERE Type like '%"+type+"%'");
     
-    // Loop through and print results
-    while (res->next()) {
-    	contactEntry entry(res->getString("First"),res->getString("Last"),
-			res->getString("Phone"),res->getString("Type"),
-	    	res->getString("ID"),res->getString("Address"),res->getString("Age"));
+    // // Loop through and print results
+    // while (res->next()) {
+    	// contactEntry entry(res->getString("First"),res->getString("Last"),
+			// res->getString("Phone"),res->getString("Type"),
+	    	// res->getString("ID"),res->getString("Address"),res->getString("Age"));
 	    	
-	    list.push_back(entry);
+	    // list.push_back(entry);
 
-    }
-    return list;
+    // }
+    // return list;
 
-}
+// }
 
-void contactDB::addEntry(string first,string last,string phone, string type,string address,string age){
+void contactDB::addUser(string username,string email,string password){
 
 	if (!conn) {
    		cerr << "Invalid database connection" << endl;
@@ -155,65 +154,61 @@ void contactDB::addEntry(string first,string last,string phone, string type,stri
   	}
 
   	std::auto_ptr<sql::Statement> stmnt(conn->createStatement());
-
-  	if (type != "Friend" && type != "Family" && type!="Business"){
-     	 type="Other";
-  	}
-  	
-  	stmnt->executeQuery("INSERT INTO contacts(First,Last,Phone,Type,Address,Age) VALUES ('"+first+"','"+last+"','"+phone+"','"+type+"','"+address+"','"+age+"')");
-}
-
-contactEntry contactDB::fetchEntry(string id){
-
-	contactEntry entry;	
 	
-	if (!conn) {
-   		cerr << "Invalid database connection" << endl;
-   		exit (EXIT_FAILURE);
-  	}
+  	stmnt->executeQuery("INSERT INTO Registered_Users(Username,Email,Password) VALUES ('"+username+"','"+email+"','"+password+"')");
+}
 
-  	std::auto_ptr<sql::Statement> stmnt(conn->createStatement());
+// contactEntry contactDB::fetchEntry(string id){
+
+	// contactEntry entry;	
+	
+	// if (!conn) {
+   		// cerr << "Invalid database connection" << endl;
+   		// exit (EXIT_FAILURE);
+  	// }
+
+  	// std::auto_ptr<sql::Statement> stmnt(conn->createStatement());
 
   	
-    sql::ResultSet *res = stmnt->executeQuery("SELECT * FROM contacts WHERE ID = '"+id+"'");
+    // sql::ResultSet *res = stmnt->executeQuery("SELECT * FROM contacts WHERE ID = '"+id+"'");
     
-    // Get first entry
-    if (res->next()) {
-    	entry = contactEntry(res->getString("First"),res->getString("Last"),
-			res->getString("Phone"),res->getString("Type"),
-	    	res->getString("ID"),res->getString("Address"),res->getString("Age"));
-    }
-    return entry;
-}
+    // // Get first entry
+    // if (res->next()) {
+    	// entry = contactEntry(res->getString("First"),res->getString("Last"),
+			// res->getString("Phone"),res->getString("Type"),
+	    	// res->getString("ID"),res->getString("Address"),res->getString("Age"));
+    // }
+    // return entry;
+// }
 
-void contactDB::editEntry(string idnum,string first,string last,string phone, string type,string address, string age){
-	cout << "editEntry() has run" << endl;
-	if (!conn) {
-   		cerr << "Invalid database connection" << endl;
-   		exit (EXIT_FAILURE);
-  	}
+// void contactDB::editEntry(string idnum,string first,string last,string phone, string type,string address, string age){
+	// cout << "editEntry() has run" << endl;
+	// if (!conn) {
+   		// cerr << "Invalid database connection" << endl;
+   		// exit (EXIT_FAILURE);
+  	// }
 
-  	std::auto_ptr<sql::Statement> stmnt(conn->createStatement());
+  	// std::auto_ptr<sql::Statement> stmnt(conn->createStatement());
 
-  	if (type != "Friend" && type != "Family" && type!="Business"){
-     	 type="Other";
-  	}
+  	// if (type != "Friend" && type != "Family" && type!="Business"){
+     	 // type="Other";
+  	// }
   	
-  	stmnt->executeQuery("UPDATE contacts SET First = '"+first+"', Last ='"+last+"', Phone ='"+phone+"', Type ='"+type+"' , Address ='"+address+"', Age ='"+age+"' WHERE ID='"+idnum+"'");
+  	// stmnt->executeQuery("UPDATE contacts SET First = '"+first+"', Last ='"+last+"', Phone ='"+phone+"', Type ='"+type+"' , Address ='"+address+"', Age ='"+age+"' WHERE ID='"+idnum+"'");
   	
-}
+// }
 
 
-void contactDB::deleteEntry(string idnum){
-  // Establish Connection
-  std::unique_ptr<sql::Connection>  conn(driver->connect(db_url, properties));
+// void contactDB::deleteEntry(string idnum){
+  // // Establish Connection
+  // std::unique_ptr<sql::Connection>  conn(driver->connect(db_url, properties));
     
-  if (!conn) {
-   	cerr << "Invalid database connection" << endl;
-   	exit (EXIT_FAILURE);
-  }
+  // if (!conn) {
+   	// cerr << "Invalid database connection" << endl;
+   	// exit (EXIT_FAILURE);
+  // }
 
-  std::auto_ptr<sql::Statement> stmt(conn->createStatement());
+  // std::auto_ptr<sql::Statement> stmt(conn->createStatement());
 
-  stmt->execute("DELETE FROM contacts WHERE ID='"+idnum+"'");
-}
+  // stmt->execute("DELETE FROM contacts WHERE ID='"+idnum+"'");
+// }

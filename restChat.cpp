@@ -122,6 +122,19 @@ string getMessagesJSON(string username, map<string,vector<string>> &messageMap) 
 	return result;
 }
 
+//New Function (Database Additions)-----------------------------------------------------
+string jsonResults(vector<contactEntry> pbList) {
+	string res = "{\"results\":[";
+	for (int i = 0; i<pbList.size(); i++) {
+		res += pbList[i].json();
+		if (i < pbList.size()-1) {
+			res +=",";
+		}
+	}
+	res += "]}";
+	return res;
+}
+
 //MAIN---------------------------------------------------------------------------------------
 int main(void) {
   Server svr;
@@ -134,8 +147,7 @@ int main(void) {
   map<string,string> activeUsers;
   map<string,string> typingMap;
   map<string,string> isTypingMap;
-  contactDB ctdb; // Contact Book SQL Interface Object
-  vector<contactEntry> results;
+
 
 	
   /* "/" just returnsAPI name */
@@ -152,28 +164,7 @@ int main(void) {
   });
 
   
-  //This Section is the part of the API for logging in.
-  svr.Get(R"(/chat/join/(.*)/(.*))", [&](const Request& req, Response& res) {
-    res.set_header("Access-Control-Allow-Origin","*");
-	//cout<< "this is log in output" << endl;
-    string username = req.matches[1];
-	string password = req.matches[2];
-	string email = userEmail[username];
-	string combined = "{\"user\":\""+username+"\",\"pass\":\""+password+"\",\"email\":\""+email+"\"}";
-	//cout<< combined << endl;
-	//cout<< testAgainst << endl;
-    string result;
-    // Check if user with this name and password exists
-    if (combined == userMap[username]){
-    	result = "{\"status\":\"success\",\"user\":\"" + username + "\"}";
-		activeUsers[username] = "this user is active";
-		cout << username << " joins" << endl;
-    } else {
-    	result = "{\"status\":\"failure\"}";
-    }
-    res.set_content(result, "text/json");
-	getUserList(userMap);
-  });
+
 
   //This is the part of the API that handles sending messages.
    svr.Get(R"(/chat/send/(.*)/(.*))", [&](const Request& req, Response& res) {
@@ -263,7 +254,9 @@ int main(void) {
 
 
 //BELOW IS FOR DATABASE-----------------------------------------------------------------------------------
-  
+  contactDB ctdb; // Contact Book SQL Interface Object
+  vector<contactEntry> results;
+ 
   //REGISTRATION: This Section should handle someone registering, /chat/register/username/email/password
   svr.Get(R"(/chat/register/(.*)/(.*)/(.*))", [&](const Request& req, Response& res) {
 	res.set_header("Access-Control-Allow-Origin","*");
@@ -279,17 +272,43 @@ int main(void) {
     	// Add users to various maps
     	messageMap[username]= empty;
 		userEmail[username] = email;
-		addUser(username , password, email , userMap);
     	result = "{\"status\":\"success\",\"user\":\"" + username + "\",\"email\":\"" + email + "\",\"pass\":\"" + password + "\"}";
 		//Output some stuff
 		cout << username << " registered" << endl;
 		cout << "User Email: " << userEmail[username] << endl;
+		//ADD USER TO PHPMYADMIN DATABASE
+		ctdb.addUser(username,email,password);
 
     }
+
     res.set_content(result, "text/json");
   });
   
-  
+  //LOGGING IN-----------------------------------------------
+  svr.Get(R"(/chat/join/(.*)/(.*))", [&](const Request& req, Response& res) {
+    res.set_header("Access-Control-Allow-Origin","*");
+	//cout<< "this is log in output" << endl;
+    string username = req.matches[1];
+	string password = req.matches[2];
+	string email = userEmail[username];
+	results = ctdb.findByFirst(username);
+	string json = jsonResults(results);
+	cout << "This is the Log in API Call" << json << endl;
+	string combined = "{\"user\":\""+username+"\",\"pass\":\""+password+"\",\"email\":\""+email+"\"}";
+	//cout<< combined << endl;
+	//cout<< testAgainst << endl;
+    string result;
+    // Check if user with this name and password exists
+    if (combined == userMap[username]){
+    	result = "{\"status\":\"success\",\"user\":\"" + username + "\"}";
+		activeUsers[username] = "this user is active";
+		cout << username << " joins" << endl;
+    } else {
+    	result = "{\"status\":\"failure\"}";
+    }
+    res.set_content(result, "text/json");
+	getUserList(userMap);
+  });
   
   
   //What comes out in the Linux Console:
