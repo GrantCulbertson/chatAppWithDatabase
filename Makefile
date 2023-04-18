@@ -28,7 +28,7 @@ contactEntry.o: contactEntry.cpp userEntry.h
 contactDB.o: contactDB.cpp database.h
 	$(CC) -c $(CFLAGS) -I/usr/include/cppconn contactDB.cpp
 
-restChat.o: restChat.cpp httplib.h
+restChat.o: restChat.cpp httplib.h nlohmann/json.hpp
 	$(CC) -c $(CFLAGS) restChat.cpp
 
 

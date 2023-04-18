@@ -15,7 +15,9 @@
 #include "database.h"
 #include "userEntry.h"
 #include "httplib.h"
+#include "nlohmann/json.hpp"
 
+using json = nlohmann::json;
 using namespace httplib;
 using namespace std;
 
