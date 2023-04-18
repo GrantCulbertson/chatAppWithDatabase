@@ -267,10 +267,18 @@ int main(void) {
 	string password = req.matches[3];
     string result;
     vector<string> empty;
+	//Check if user exists in the database already:
+	results = ctdb.findByFirst(username);
+	string jsonMessage = jsonResults(results);
+	json json_obj = json::parse(jsonMessage);
+	json getArray = json_obj["results"];
+	string json_str = getArray.dump();
+	bool emptyCheck = json_str == "[]";
+	cout << "Registration is Running: " << jsonMessage << " " << json_str << " " << emptyCheck <<endl;
     // Check if user with this name or email already exists, or if password is less than 6 characters.
-    if (messageMap.count(username) or messageMap.count(email) or password.length() < 7){
+    if (json_str != "[]" or password.length() < 7){
     	result = "{\"status\":\"registrationfailure\"}";
-    } else {
+    }else{
     	// Add users to various maps
     	messageMap[username]= empty;
 		userEmail[username] = email;
@@ -280,7 +288,6 @@ int main(void) {
 		cout << "User Email: " << userEmail[username] << endl;
 		//ADD USER TO PHPMYADMIN DATABASE
 		ctdb.addUser(username,email,password);
-
     }
 
     res.set_content(result, "text/json");
@@ -324,7 +331,9 @@ int main(void) {
 	getUserList(userMap);
   });
   
-  
+ 
+//ADD A MESSAGE TO THE DATABASE----------------------------------------------------------------------
+
   //What comes out in the Linux Console:
   cout << "Server listening on port " << port << endl;
   cout << "Chat Time" << endl;
