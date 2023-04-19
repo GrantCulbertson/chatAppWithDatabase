@@ -74,8 +74,9 @@ void removeUser(map<string, string> &activeUsers , string username){
 
 
 //Add a message to a user.
-void addMessage(string username, string message, map<string,vector<string>> &messageMap) {
+void addMessage(string message, map<string,vector<string>> &messageMap,map<string,string> &tokenMap,string token) {
 	/* iterate through users adding message to each */
+	string username = tokenMap[token];
 	string jsonMessage = "{\"user\":\""+username+"\",\"message\":\""+message+"\"}";
 	for (auto userMessagePair : messageMap) {
 		username = userMessagePair.first;
@@ -168,9 +169,9 @@ int main(void) {
   map<string,string> activeUsers;
   map<string,string> typingMap;
   map<string,string> isTypingMap;
+  map<string,string> tokenMap;
 
 
-	
   /* "/" just returnsAPI name */
   //This is the API home page
   svr.Get("/", [](const Request & /*req*/, Response &res) {
@@ -339,13 +340,14 @@ int main(void) {
 	// cout << "gotPassword: " << gotPassword << endl;
 	string result;
 	//Assign the user a random token.
-	string token = generate_token(20);
 	
 	
 	if(gotUsername == username && gotPassword == password){
-		result = "{\"status\":\"success\",\"user\":\"" + username + "\"}";
 		activeUsers[username] = "this user is active";
+		string token = generate_token(20);
+		tokenMap[token] = username;
 		cout << username << " joins, token is " << token << endl;
+		result = "{\"status\":\"success\",\"user\":\"" + username + "\",\"token\":\"" + token + "\"}";
 	}else{
 		result = "{\"status\":\"failure\"}";
 	}
@@ -355,13 +357,13 @@ int main(void) {
   
  
 //ADD A MESSAGE TO THE DATABASE----------------------------------------------------------------------
-   svr.Get(R"(/chat/send/(.*)/(.*))", [&](const Request& req, Response& res) {
+   svr.Get(R"(/chat/send/(.*)/(.*)/(.*))", [&](const Request& req, Response& res) {
     res.set_header("Access-Control-Allow-Origin","*");
 	string username = req.matches[1];
 	string message = req.matches[2];
+	string token = req.matches[3];
 	string result;
 	//Grab information from the SQL database:
-	
 	//Get JSON object from SQL and parse to get Username and ID:
 	results = ctdb.findByFirst(username);
 	string jsonMessage = jsonResults(results);
@@ -380,10 +382,10 @@ int main(void) {
 	string gotID = obtainedValues["ID"];
 	
 	ctdb.addMessage(gotID,gotUsername,message);
-    if (!messageMap.count(username)) {
+    if (!tokenMap.count(token)) {
     	result = "{\"status\":\"baduser\"}";
 	} else {
-		addMessage(username,message,messageMap);
+		addMessage(message,messageMap,tokenMap,token);
 		result = "{\"status\":\"success\"}";
 	}
     res.set_content(result, "text/json");

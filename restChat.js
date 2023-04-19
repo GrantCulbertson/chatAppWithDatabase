@@ -35,10 +35,11 @@ document.getElementById('message').addEventListener("keydown", (e)=> {
 // Call function on page exit
 window.onbeforeunload = leaveSession;
 
-
+//Make token a global variable:
+let token = "";
 function completeJoin(results) {
 	var status = results['status'];
-	console.log("completeJoin() has run");
+	console.log("completeJoin() has run: " + results['token']);
 	console.log(status);
 	if (status != "success") {
 		alert("Account Not Found");
@@ -46,6 +47,7 @@ function completeJoin(results) {
 		return;
 	}
 	var user = results['user'];
+	token = results['token'];
 	console.log("Join:"+user);
 	//https://stackoverflow.com/questions/3180710/javascript-change-p-content-depending-on-select-option
 	startSession(user);
@@ -81,7 +83,7 @@ function sendText() {
     var message = document.getElementById('message').value;
 	document.getElementById('message').value = '';
     console.log("Send: "+myname+":"+message);
-	fetch(baseUrl+'/chat/send/'+myname+'/'+message, {
+	fetch(baseUrl+'/chat/send/'+myname+'/'+message+'/'+token, {
         method: 'get'
     })
     .then (response => response.json() )
@@ -256,60 +258,6 @@ function updateShowTyping(){
 	}
 }
 
-//IMAGE DRAG AND DROP---------------------------------------
-function dragOverHandler(ev) {
-  console.log("File(s) in drop zone");
-
-  // Prevent default behavior (Prevent file from being opened)
-  ev.preventDefault();
-}
-
-function dropHandler(ev) {
-  console.log("File(s) dropped");
-
-  // Prevent default behavior (Prevent file from being opened)
-  ev.preventDefault();
-
-  if (ev.dataTransfer.items) {
-    // Use DataTransferItemList interface to access the file(s)
-    [...ev.dataTransfer.items].forEach((item, i) => {
-      // If dropped items aren't files, reject them
-      if (item.kind === "file") {
-        const file = item.getAsFile();
-        console.log(`… file[${i}].name = ${file.name}`);
-      }
-    });
-  } else {
-    // Use DataTransfer interface to access the file(s)
-    [...ev.dataTransfer.files].forEach((file, i) => {
-      console.log(`… file[${i}].name = ${file.name}`);
-    });
-  }
-}
-
-function handleDrop(ev) {
-  ev.preventDefault();
-  let dt = ev.dataTransfer;
-  let files = dt.files;
-  handleFiles(files);
-}
-
-function handleFiles(files) {
-  ([...files]).forEach(uploadFile)
-}
-
-function uploadFile(file) {
-  let url = 'http://18.116.8.156:5005/chat/image/send';
-  let formData = new FormData()
-  formData.append('file', file)
-  fetch(url, {
-    method: 'POST',
-	body: formData
-  })
-  .then(() => { /* Done. Inform the user */ })
-  .catch(() => { /* Error. Inform the user */ })
-}
-
 //SEND AN EMAIL--------------
 //https://kaustubh72.medium.com/send-e-mails-with-smtp-js-a8e07e1d0b6b
 //https://www.smtpjs.com/
@@ -342,8 +290,8 @@ function updateUsersSam(data){
 	//https://dev.to/sanchithasr/6-ways-to-convert-a-string-to-an-array-in-javascript-1cjg
 	//https://www.educative.io/answers/how-to-add-an-id-to-element-in-javascript
 	const usersArray = users.split(',');
-	console.log(users);
-	console.log(typerArray);
+	//console.log(users);
+	//console.log(typerArray);
 	//console.log(usersArray);
     // Get the user list container element
     const userBar = document.getElementById('bottomPageList');
@@ -490,7 +438,7 @@ function fetchTypers() {
 
 var typerArray = "";
 function makeTyperArray(data){
-	console.log(data);
+	//console.log(data);
 	const users = data['typerList'];
 	//Returning list like Grant,Sammy,Joe,etc. and then turning it into a javascript array.
 	//https://dev.to/sanchithasr/6-ways-to-convert-a-string-to-an-array-in-javascript-1cjg
