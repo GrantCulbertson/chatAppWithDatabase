@@ -68,8 +68,9 @@ string getUserListMod(map<string, string> const &activeUsers){
 
 
 //Remove someone from the active users list
-void removeUser(map<string, string> &activeUsers , string username){
+void removeUser(map<string, string> &activeUsers , string username, string token,map<string,string> &tokenMap){
 	activeUsers.erase(username);
+	tokenMap.erase(token);
 }
 
 
@@ -221,10 +222,11 @@ int main(void) {
   });
   
    //This part of the code will remove a user from the active user list.
-   svr.Get(R"(/chat/userlist/remove/(.*))", [&](const Request& req, Response& res) {
+   svr.Get(R"(/chat/userlist/remove/(.*)/(.*))", [&](const Request& req, Response& res) {
     res.set_header("Access-Control-Allow-Origin","*");
 	string username = req.matches[1];
-	removeUser(activeUsers , username);
+	string token = req.matches[2];
+	removeUser(activeUsers , username , token , tokenMap);
   });
   
   //This part of the code will update whether someone is typing.
@@ -338,12 +340,11 @@ int main(void) {
 	// cout << "obtainedValues: " << obtainedValues << endl;
 	// cout << "gotUsername: " << gotUsername << endl;
 	// cout << "gotPassword: " << gotPassword << endl;
-	string result;
-	//Assign the user a random token.
-	
+	string result;	
 	
 	if(gotUsername == username && gotPassword == password){
 		activeUsers[username] = "this user is active";
+		//Assign the user a random token.
 		string token = generate_token(20);
 		tokenMap[token] = username;
 		cout << username << " joins, token is " << token << endl;

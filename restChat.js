@@ -213,7 +213,7 @@ function completeRegisterUser(results){
 
 //Function to remove a user after they leave the site.
 function removeUser(){
-		fetch(baseUrl+'/chat/userlist/remove/'+nameHold, {
+		fetch(baseUrl+'/chat/userlist/remove/'+nameHold+'/'+token, {
         method: 'get'
     })
 }	
