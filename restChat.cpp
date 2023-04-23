@@ -17,6 +17,7 @@
 #include "userEntry.h"
 #include "httplib.h"
 #include "nlohmann/json.hpp"
+#include <sstream>
 
 using json = nlohmann::json;
 using namespace httplib;
@@ -158,6 +159,18 @@ string jsonResults(vector<contactEntry> pbList) {
 	return res;
 }
 
+string jsonResultsMessages(vector<messageEntry> pbList) {
+	string res = "{\"results\":[";
+	for (int i = 0; i<pbList.size(); i++) {
+		res += pbList[i].json();
+		if (i < pbList.size()-1) {
+			res +=",";
+		}
+	}
+	res += "]}";
+	return res;
+}
+
 //MAIN---------------------------------------------------------------------------------------
 int main(void) {
   Server svr;
@@ -280,6 +293,7 @@ int main(void) {
 //BELOW IS FOR DATABASE-----------------------------------------------------------------------------------
   contactDB ctdb; // Contact Book SQL Interface Object
   vector<contactEntry> results;
+  vector<messageEntry> messageResults;
  
   //REGISTRATION: This Section should handle someone registering, /chat/register/username/email/password
   svr.Get(R"(/chat/register/(.*)/(.*)/(.*))", [&](const Request& req, Response& res) {
@@ -391,6 +405,28 @@ int main(void) {
 	}
     res.set_content(result, "text/json");
   });
+
+
+
+//FUNCTION TO POPULATE CHAT HISTORY------------------------------------------------------------------
+    svr.Get(R"(/chat/chatHistory)", [&](const Request& req, Response& res) {
+    res.set_header("Access-Control-Allow-Origin","*");
+	//Fetch the SQL data and parse it.
+	messageResults = ctdb.fetchMessages();
+	string jsonMessage = jsonResultsMessages(messageResults);	
+	//Break down the comma seperated JSON into an array. using for loop.
+	json json_obj = json::parse(jsonMessage);
+	json getArray = json_obj["results"];
+	json obtainedValues;
+	
+	//Check output
+	cout << "Messages have been fetched: " << jsonMessage << endl;
+	
+	string result;
+	res.set_content(result, "text/json");
+  });
+
+
 
 
 

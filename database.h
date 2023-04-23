@@ -33,12 +33,14 @@ public:
     vector<contactEntry> findByFirst(string first);
     vector<contactEntry> findByLast(string last);
     vector<contactEntry> findByType(string type);
+    vector<messageEntry> fetchMessages();
     contactEntry fetchEntry(string id);
     void editEntry(string idnum,string first,string last,string phone,string type,string address,string age);
     void deleteEntry(string idnum);
 	//New Functions:
 	void addUser(string username,string email,string password);
 	void addMessage(string ID, string username, string message);
+
 private:
     const string db_url=DB_URL;
     const string user=USER;

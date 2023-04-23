@@ -118,6 +118,32 @@ vector<contactEntry> contactDB::findByFirst(string first) {
     return list;
 }
 
+vector<messageEntry> contactDB::fetchMessages() {
+
+	vector<messageEntry> list;
+	
+    // Make sure the connection is still valid
+    if (!conn) {
+   		cerr << "Invalid database connection" << endl;
+   		exit (EXIT_FAILURE);
+   	}	
+    // Create a new Statement
+	std::unique_ptr<sql::Statement> stmnt(conn->createStatement());
+    
+    // Execute query
+    sql::ResultSet *res = stmnt->executeQuery("SELECT * FROM Messages");
+    
+    // Loop through and print results
+    while (res->next()) {
+    	messageEntry entry(res->getString("Username"),res->getString("Message"),
+			res->getString("Timestamp"),res->getString("ID"));
+	    	
+	    list.push_back(entry);
+    }
+    return list;
+}
+
+
 // vector<contactEntry> contactDB::findByType(string type) {
 	// vector<contactEntry> list;
 	

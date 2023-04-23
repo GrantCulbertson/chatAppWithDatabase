@@ -140,7 +140,7 @@ function startSession(name){
 
 function leaveSession(){
     state="off";
-    removeUser(nameHold);
+    removeUser();
     document.getElementById('yourname').value = "";
     document.getElementById('register').style.display = 'block';
     document.getElementById('user').innerHTML = "";

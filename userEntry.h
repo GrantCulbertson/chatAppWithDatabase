@@ -28,5 +28,22 @@ private:
 
 };
 
+
+class messageEntry {
+public:
+     messageEntry();
+     messageEntry(sql::SQLString u, sql::SQLString m, sql::SQLString t,sql::SQLString I);
+     string text();
+     string json();
+     
+	 //Stuff that can go in
+	 string ID;
+	 string username;
+	 string timestamp;
+	 string message;
+
+private:
+
+};
 #endif /* CONTACTENTRY_H */
 
